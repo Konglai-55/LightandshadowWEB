@@ -1,0 +1,16 @@
+{
+  "name": "light-shadow-corporate-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "广东光影嘉筑装饰有限公司三语单页企业官网",
+  "scripts": {
+    "start": "http-server . -p 5000 -a 0.0.0.0 -c-1",
+    "dev": "http-server . -p 5000 -a 127.0.0.1 -c-1"
+  },
+  "devDependencies": {
+    "http-server": "14.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
