@@ -3,30 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
   <title>报告：20262120777369 在线验证</title>
   <style>
     * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
-    body { margin: 0; background: #eef1f3; color: #24272b; font-family: "Microsoft YaHei", Arial, sans-serif; }
-    header { position: sticky; top: 0; z-index: 1; min-height: 64px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #fff; border-bottom: 1px solid #d8dce0; }
-    h1 { margin: 0; font-size: 16px; font-weight: 600; }
+    [hidden] { display: none !important; }
+    body { margin: 0; color: #24272b; background: #eceef0; font-family: "Microsoft YaHei", Arial, sans-serif; letter-spacing: 0; }
+    header { min-height: 64px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #fff; border-bottom: 1px solid #d8dce0; }
+    h1 { margin: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+    h1 small { display: block; margin-top: 4px; color: #636970; font-size: 12px; font-weight: 400; }
     a { color: #176951; }
-    .download { padding: 10px 16px; border-radius: 4px; background: #176951; color: #fff; text-decoration: none; }
-    .download:hover { background: #10533e; }
-    main { width: min(100% - 24px, 900px); margin: 0 auto; padding: 12px 0 32px; }
-    .page { display: block; width: 100%; height: auto; margin-bottom: 12px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
-    @media (max-width: 480px) { header { padding: 10px 12px; } h1 { font-size: 13px; } .download { padding: 9px 11px; white-space: nowrap; } main { width: 100%; padding: 0; } .page { margin: 0; box-shadow: none; } }
+    #download { flex: 0 0 auto; padding: 11px 16px; border-radius: 4px; background: #176951; color: #fff; font-size: 14px; text-decoration: none; }
+    #download:hover { background: #10533e; }
+    a:focus-visible { outline: 3px solid #c58f17; outline-offset: 3px; }
+    #status { padding: 40px 20px; text-align: center; line-height: 1.8; }
+    #viewer { height: calc(100vh - 78px); height: calc(100dvh - 78px); min-height: 320px; }
+    iframe { display: block; width: 100%; height: calc(100% - 40px); border: 0; }
+    .open { height: 40px; margin: 0; display: flex; align-items: center; justify-content: center; background: #fff; font-size: 13px; }
+    @media (max-width: 480px) { header { padding: 12px; gap: 10px; } h1 { font-size: 14px; } #download { padding: 11px 12px; } }
   </style>
 </head>
 <body>
   <header>
-    <h1>报告：20262120777369 在线验证</h1>
-    <a class="download" href="assets/reports/20262120777369.pdf" download="报告-20262120777369.pdf">下载 PDF</a>
+    <h1>报告：20262120777369<small>在线验证</small></h1>
+    <a id="download" download="报告-20262120777369.pdf" hidden>下载 PDF</a>
   </header>
   <main>
-    <img class="page" src="assets/reports/20262120777369-page-1.jpg" alt="报告第 1 页" width="1200" height="1697">
-    <img class="page" src="assets/reports/20262120777369-page-2.jpg" alt="报告第 2 页" width="1200" height="1697" loading="lazy">
+    <p id="status" role="status">正在打开报告…</p>
+    <div id="viewer" hidden>
+      <iframe id="pdf" title="报告：20262120777369"></iframe>
+      <p class="open"><a id="open" target="_blank" rel="noopener noreferrer">在新窗口打开 PDF</a></p>
+    </div>
+    <noscript>请启用 JavaScript 后使用完整报告链接访问。</noscript>
   </main>
+  <script>
+    (async () => {
+      const status = document.getElementById('status');
+      const secret = location.hash.slice(1);
+      if (!/^[a-f0-9]{64}$/i.test(secret)) {
+        status.textContent = '链接无效，请使用完整的报告访问链接。';
+        return;
+      }
+      if (!globalThis.crypto?.subtle) {
+        status.textContent = '请通过 HTTPS 或本机 localhost 地址访问报告。';
+        return;
+      }
+      try {
+        const response = await fetch('assets/reports/20262120777369.enc', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Report unavailable');
+        const encrypted = new Uint8Array(await response.arrayBuffer());
+        const rawKey = Uint8Array.from(secret.match(/../g), byte => parseInt(byte, 16));
+        const key = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['decrypt']);
+        // The file contains a 12-byte IV followed by ciphertext and its authentication tag.
+        const data = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: encrypted.slice(0, 12) }, key, encrypted.slice(12));
+        const url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
+        document.getElementById('pdf').src = url + '#view=FitH';
+        document.getElementById('open').href = url;
+        const download = document.getElementById('download');
+        download.href = url;
+        download.hidden = false;
+        document.getElementById('viewer').hidden = false;
+        status.hidden = true;
+      } catch {
+        status.textContent = '报告无法打开，请检查链接是否完整以及网络连接后重试。';
+      }
+    })();
+  </script>
 </body>
 </html>
