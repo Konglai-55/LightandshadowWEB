@@ -62,15 +62,6 @@ button { color: inherit; font: inherit; }
 .site-nav a:hover, .site-nav a.active { opacity: 1; }
 .site-nav a:hover::after, .site-nav a.active::after { right: 0; }
 .nav-contact { padding: 11px 18px; border: 1px solid currentColor; }
-.language-switcher { display: flex; align-items: center; gap: 4px; padding-left: 16px; border-left: 1px solid rgba(255,255,255,.22); }
-.site-header.scrolled .language-switcher { border-left-color: rgba(23,25,21,.18); }
-.language-switcher button {
-  min-width: 38px; height: 38px; padding: 0 8px; border: 1px solid transparent; background: transparent; color: inherit;
-  cursor: pointer; font-size: 11px; letter-spacing: .05em; opacity: .55; transition: color .2s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
-}
-.language-switcher button:hover { opacity: 1; border-color: currentColor; }
-.language-switcher button.active { color: #17180f; background: var(--gold-bright); border-color: var(--gold-bright); opacity: 1; }
-.language-switcher button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
 .menu-toggle { display: none; background: none; border: 0; padding: 10px; position: relative; z-index: 2; }
 .menu-toggle > span:not(.sr-only) { display: block; width: 25px; height: 1px; margin: 6px; background: currentColor; transition: .25s ease; }
 
@@ -176,16 +167,6 @@ button { color: inherit; font: inherit; }
 .park-list div { min-height: 72px; padding: 22px 18px 20px 0; border-bottom: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.6; }
 .park-list div:nth-child(even) { padding-left: 28px; border-left: 1px solid rgba(255,255,255,.15); }
 .park-list span { display: inline-block; width: 31px; color: var(--gold); font-size: 9px; vertical-align: 2px; }
-.park-list b { font-weight: inherit; }
-
-html[lang="en"] .hero h1,
-html[lang="es"] .hero h1 { max-width: 1160px; font-size: clamp(52px, 5.7vw, 86px); letter-spacing: -.045em; }
-html[lang="en"] .section-heading h2,
-html[lang="en"] .footprint h2,
-html[lang="en"] .contact h2,
-html[lang="es"] .section-heading h2,
-html[lang="es"] .footprint h2,
-html[lang="es"] .contact h2 { letter-spacing: -.035em; }
 
 .process { background: var(--paper); }
 .process-list { margin: 70px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4,1fr); list-style: none; counter-reset: none; border-top: 1px solid var(--line); }
@@ -237,9 +218,7 @@ html[lang="es"] .contact h2 { letter-spacing: -.035em; }
 
 @media (max-width: 980px) {
   :root { --shell: min(100% - 40px, 1200px); }
-  .site-nav { gap: 18px; }
-  .language-switcher { padding-left: 8px; }
-  .language-switcher button { min-width: 34px; padding-inline: 5px; }
+  .site-nav { gap: 20px; }
   .hero { min-height: 720px; }
   .about-grid, .footprint-grid, .contact-grid { gap: 70px; }
   .service-card { grid-template-columns: 55px 70px 1fr; gap: 24px; }
@@ -275,9 +254,6 @@ html[lang="es"] .contact h2 { letter-spacing: -.035em; }
   .site-nav a { width: 100%; min-height: 58px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 20px; }
   .site-nav a::after { display: none; }
   .site-nav .nav-contact { margin-top: 22px; width: auto; padding: 13px 22px; border: 1px solid rgba(255,255,255,.55); font-size: 14px; }
-  .language-switcher { width: 100%; margin-top: 28px; padding: 24px 0 0; gap: 10px; border-left: 0; border-top: 1px solid rgba(255,255,255,.14); }
-  .site-header.scrolled .language-switcher { border-left-color: transparent; border-top-color: rgba(255,255,255,.14); }
-  .language-switcher button { min-width: 52px; height: 44px; padding: 0 10px; border-color: rgba(255,255,255,.22); font-size: 12px; opacity: .75; }
 
   .hero { height: auto; min-height: max(700px, 100svh); padding: 112px 0 42px; align-items: flex-start; }
   .hero-media { background-position: 60% center; }
@@ -286,8 +262,6 @@ html[lang="es"] .contact h2 { letter-spacing: -.035em; }
   .eyebrow { margin-bottom: 20px; gap: 10px; font-size: 9px; letter-spacing: .18em; }
   .eyebrow::before { width: 28px; }
   .hero h1 { font-size: clamp(43px, 12.8vw, 53px); line-height: 1.1; }
-  html[lang="en"] .hero h1,
-  html[lang="es"] .hero h1 { font-size: clamp(36px, 10.2vw, 44px); line-height: 1.12; }
   .hero-lead { max-width: 100%; margin-top: 22px; font-size: 13px; line-height: 1.85; overflow-wrap: anywhere; }
   .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
   .button { min-width: 0; min-height: 48px; padding: 12px 10px; font-size: 13px; }
@@ -307,14 +281,6 @@ html[lang="es"] .contact h2 { letter-spacing: -.035em; }
   .about-copy .about-lead { font-size: 18px; line-height: 1.7; }
   .values span { padding: 15px 4px; letter-spacing: .05em; }
   .about-visual img { height: 390px; }
-  html[lang="en"] .about-visual figcaption,
-  html[lang="es"] .about-visual figcaption { gap: 10px; padding-inline: 16px; font-size: 10px; letter-spacing: .03em; }
-  html[lang="en"] .values,
-  html[lang="es"] .values { display: grid; grid-template-columns: 1fr 1fr; }
-  html[lang="en"] .values span:nth-child(3),
-  html[lang="es"] .values span:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
-  html[lang="en"] .values span:nth-child(4),
-  html[lang="es"] .values span:nth-child(4) { border-top: 1px solid var(--line); }
   .about-visual::after { right: -9px; top: -12px; }
   .about-quote { padding: 42px 0 0 32px; font-size: 22px; }
 

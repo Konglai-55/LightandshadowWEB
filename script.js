@@ -2,12 +2,6 @@ const header = document.querySelector('.site-header');
 const menuToggle = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('.site-nav');
 const navLinks = [...document.querySelectorAll('.site-nav a[href^="#"]')];
-const menuLabel = menuToggle.querySelector('.sr-only');
-
-function syncMenuLabel(open) {
-  if (!menuLabel || !window.siteI18n) return;
-  menuLabel.textContent = window.siteI18n.translate(open ? 'menuClose' : 'menuOpen');
-}
 
 function updateHeader() {
   header.classList.toggle('scrolled', window.scrollY > 24);
@@ -17,7 +11,6 @@ function closeMenu() {
   navigation.classList.remove('open');
   menuToggle.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('menu-open');
-  syncMenuLabel(false);
 }
 
 menuToggle.addEventListener('click', () => {
@@ -25,15 +18,11 @@ menuToggle.addEventListener('click', () => {
   menuToggle.setAttribute('aria-expanded', String(!open));
   navigation.classList.toggle('open', !open);
   document.body.classList.toggle('menu-open', !open);
-  syncMenuLabel(!open);
 });
 
 navLinks.forEach((link) => link.addEventListener('click', closeMenu));
 window.addEventListener('scroll', updateHeader, { passive: true });
 updateHeader();
-window.addEventListener('site:languagechange', () => {
-  syncMenuLabel(menuToggle.getAttribute('aria-expanded') === 'true');
-});
 
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
