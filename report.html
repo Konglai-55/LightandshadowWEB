@@ -14,32 +14,33 @@
     h1 { margin: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
     h1 small { display: block; margin-top: 4px; color: #636970; font-size: 12px; font-weight: 400; }
     a { color: #176951; }
-    #download { flex: 0 0 auto; padding: 11px 16px; border-radius: 4px; background: #176951; color: #fff; font-size: 14px; text-decoration: none; }
+    #download { flex: 0 0 auto; padding: 11px 16px; border: 0; border-radius: 4px; background: #176951; color: #fff; font: inherit; font-size: 14px; cursor: pointer; }
     #download:hover { background: #10533e; }
-    a:focus-visible { outline: 3px solid #c58f17; outline-offset: 3px; }
+    a:focus-visible, button:focus-visible { outline: 3px solid #c58f17; outline-offset: 3px; }
     #status { padding: 40px 20px; text-align: center; line-height: 1.8; }
-    #viewer { height: calc(100vh - 78px); height: calc(100dvh - 78px); min-height: 320px; }
-    iframe { display: block; width: 100%; height: calc(100% - 40px); border: 0; }
-    .open { height: 40px; margin: 0; display: flex; align-items: center; justify-content: center; background: #fff; font-size: 13px; }
+    #viewer { min-height: calc(100vh - 64px); min-height: calc(100dvh - 64px); padding: 16px; }
+    .page { width: min(100%, 920px); margin: 0 auto 16px; background: #fff; box-shadow: 0 1px 6px rgb(0 0 0 / 14%); }
+    .page canvas { display: block; width: 100%; height: auto; }
     @media (max-width: 480px) { header { padding: 12px; gap: 10px; } h1 { font-size: 14px; } #download { padding: 11px 12px; } }
   </style>
 </head>
 <body>
   <header>
     <h1>报告：20262120777369<small>在线验证</small></h1>
-    <a id="download" download="报告-20262120777369.pdf" hidden>下载 PDF</a>
+    <button id="download" type="button" hidden>下载 PDF</button>
   </header>
   <main>
     <p id="status" role="status">正在打开报告…</p>
-    <div id="viewer" hidden>
-      <iframe id="pdf" title="报告：20262120777369"></iframe>
-      <p class="open"><a id="open" target="_blank" rel="noopener noreferrer">在新窗口打开 PDF</a></p>
-    </div>
+    <div id="viewer" aria-label="报告：20262120777369" hidden></div>
     <noscript>请启用 JavaScript 后使用完整报告链接访问。</noscript>
   </main>
-  <script>
+  <script type="module">
+    import * as pdfjsLib from './assets/vendor/pdfjs/pdf.min.js';
+
     (async () => {
       const status = document.getElementById('status');
+      const viewer = document.getElementById('viewer');
+      const download = document.getElementById('download');
       const secret = location.hash.slice(1);
       if (!/^[a-f0-9]{64}$/i.test(secret)) {
         status.textContent = '链接无效，请使用完整的报告访问链接。';
@@ -57,13 +58,42 @@
         const key = await crypto.subtle.importKey('raw', rawKey, 'AES-GCM', false, ['decrypt']);
         // The file contains a 12-byte IV followed by ciphertext and its authentication tag.
         const data = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: encrypted.slice(0, 12) }, key, encrypted.slice(12));
-        const url = URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
-        document.getElementById('pdf').src = url + '#view=FitH';
-        document.getElementById('open').href = url;
-        const download = document.getElementById('download');
-        download.href = url;
+        const pdfBytes = new Uint8Array(data);
+        if (new TextDecoder().decode(pdfBytes.slice(0, 5)) !== '%PDF-') throw new Error('Invalid report');
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './assets/vendor/pdfjs/pdf.worker.min.js';
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBytes) }).promise;
+        const pixelRatio = Math.min(globalThis.devicePixelRatio || 1, 2);
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const naturalViewport = page.getViewport({ scale: 1 });
+          const scale = Math.max(1, (Math.min(viewer.clientWidth || innerWidth, 920) / naturalViewport.width) * pixelRatio);
+          const viewport = page.getViewport({ scale });
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.ceil(viewport.width);
+          canvas.height = Math.ceil(viewport.height);
+          canvas.style.aspectRatio = `${naturalViewport.width} / ${naturalViewport.height}`;
+          const pageElement = document.createElement('section');
+          pageElement.className = 'page';
+          pageElement.setAttribute('aria-label', `第 ${pageNumber} 页，共 ${pdf.numPages} 页`);
+          pageElement.append(canvas);
+          viewer.append(pageElement);
+          await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        }
+
+        download.addEventListener('click', () => {
+          let binary = '';
+          const chunkSize = 0x8000;
+          for (let offset = 0; offset < pdfBytes.length; offset += chunkSize) {
+            binary += String.fromCharCode(...pdfBytes.subarray(offset, offset + chunkSize));
+          }
+          const link = document.createElement('a');
+          link.href = `data:application/pdf;base64,${btoa(binary)}`;
+          link.download = '报告-20262120777369.pdf';
+          link.click();
+        });
         download.hidden = false;
-        document.getElementById('viewer').hidden = false;
+        viewer.hidden = false;
         status.hidden = true;
       } catch {
         status.textContent = '报告无法打开，请检查链接是否完整以及网络连接后重试。';
